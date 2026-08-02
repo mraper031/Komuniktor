@@ -29,7 +29,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-database.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/12.17.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDrB9ror4PxtE57WiR2s3vb_PUS0V-G2Os",
@@ -70,13 +70,18 @@
         }
     });
 
-    onChildAdded(ref(db, 'messages/'), (snapshot) => {
+    onValue(ref(db, 'messages/'), (snapshot) => {
+        chatBox.innerHTML = "";
         const data = snapshot.val();
-        const msgDiv = document.createElement("div");
-        msgDiv.className = "msg";
-        msgDiv.innerHTML = `<span>${data.user}:</span> ${data.text}`;
-        chatBox.appendChild(msgDiv);
-        chatBox.scrollTop = chatBox.scrollHeight;
+        if (data) {
+            Object.values(data).forEach(msg => {
+                const msgDiv = document.createElement("div");
+                msgDiv.className = "msg";
+                msgDiv.innerHTML = `<span>${msg.user}:</span> ${msg.text}`;
+                chatBox.appendChild(msgDiv);
+            });
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
     });
 </script>
 
